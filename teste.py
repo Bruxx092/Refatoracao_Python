@@ -2,24 +2,24 @@ from models.user_model import UserModel
 
 def main():
     try:
-        print("Testing database connection...")
+        print("Testando conexão com a database...")
         from database.oracle_db import conectar
         conn = conectar()
         conn.close()
         
-        print("\nCreating table...")
+        print("\nCriando Tabela...")
         UserModel.criar_tabela()
         
-        print("\nInserting user...")
-        user_id = UserModel.inserir_usuario("John Doe", "john@example.com")
-        print(f"Inserted user ID: {user_id}")
+        print("\nInserindo usuário...")
+        user_id = UserModel.inserir_usuario("John Doe", "john@exemplo.com")
+        print(f"Inserindo ID de usuário: {user_id}")
         
-        print("\nListing users...")
+        print("\nListando usuários...")
         users = UserModel.listar_usuarios()
         print("Users:", users)
         
     except Exception as e:
-        print(f"\nError in test: {str(e)}")
+        print(f"\nErro no teste: {str(e)}")
 
 if __name__ == "__main__":
     main()

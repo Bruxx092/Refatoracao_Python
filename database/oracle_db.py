@@ -8,7 +8,7 @@ load_dotenv(env_path)
 
 def conectar():
     try:
-        print("Attempting connection with:")
+        print("Tentando conexão com:")
         print(f"User: {os.getenv('ORACLE_USER')}")
         print(f"DSN: {os.getenv('ORACLE_DSN')}")
         
@@ -20,11 +20,11 @@ def conectar():
             password=os.getenv("ORACLE_PASSWORD"),
             dsn=os.getenv("ORACLE_DSN")
         )
-        print("Connection successful!")
+        print("Conexão bem sucedida!")
         return conn
         
     except Exception as e:
-        print(f"Connection failed: {str(e)}")
+        print(f"Conexão falhou: {str(e)}")
         raise
 
 if __name__ == "__main__":

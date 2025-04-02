@@ -25,10 +25,10 @@ class UserModel:
                 END;
             """)
             conn.commit()
-            print("Table created successfully")
+            print("Tabela criada com sucesso!")
             
         except oracledb.DatabaseError as e:
-            print(f"Error creating table: {e}")
+            print(f"Erro criando a tabela: {e}")
             raise
         finally:
             if conn:
@@ -54,8 +54,8 @@ class UserModel:
                 conn.rollback()
             error_obj, = e.args
             if error_obj.code == 1:  
-                raise ValueError("Email already exists") from e
-            print(f"Error inserting user: {e}")
+                raise ValueError("Email já existe") from e
+            print(f"Erro iserindo o usuário: {e}")
             raise
         finally:
             if conn:
