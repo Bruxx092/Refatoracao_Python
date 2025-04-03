@@ -1,0 +1,12 @@
+<main>
+    <h2>Lista de Usuários</h2>
+    <ul>
+        {% for usuario in usuarios %}
+            <li>
+                {{ usuario[1] }} ({{ usuario[2] }})
+                <a href="/usuarios/edit/{{ usuario[0] }}">Editar</a>
+                <a href="/usuarios/delete/{{ usuario[0] }}">Excluir</a>
+            </li>
+        {% endfor %}
+    </ul>
+</main>

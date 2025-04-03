@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Editar' if usuario else 'Cadastro' }} de Usuário</title>
+</head>
+<body>
+    <h1>{{ 'Editar' if usuario else 'Cadastro' }} de Usuário</h1>
+    {% if usuario %}
+        <article>
+            {% include 'usuarios/editar.html' %}
+        </article>
+
+    {% else %}
+        <article>
+            {% include 'usuarios/cadastro.html' %}
+        </article>
+    {% endif %}
+
+    {% include 'usuarios/listar.html' %}
+</body>
+</html>

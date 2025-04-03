@@ -1,62 +1,65 @@
-from database.oracle_db import conectar
 import oracledb
+from database.db import conectar
 
-class UserModel:
-    @staticmethod
-    def criar_tabela():
-        conn = None
-        try:
-            conn = conectar()
-            cursor = conn.cursor()
-            
-            
-            cursor.execute("""
-                BEGIN
-                    EXECUTE IMMEDIATE 'CREATE TABLE usuarios (
-                        id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                        nome VARCHAR2(100) NOT NULL,
-                        email VARCHAR2(100) NOT NULL UNIQUE
-                    )';
-                EXCEPTION
-                    WHEN OTHERS THEN
-                        IF SQLCODE = -955 THEN NULL; -- table already exists
-                        ELSE RAISE;
-                        END IF;
-                END;
-            """)
-            conn.commit()
-            print("Tabela criada com sucesso!")
-            
-        except oracledb.DatabaseError as e:
-            print(f"Erro criando a tabela: {e}")
-            raise
-        finally:
-            if conn:
-                conn.close()
-
-    @staticmethod
-    def inserir_usuario(nome, email):
-        conn = None
-        try:
-            conn = conectar()
-            cursor = conn.cursor()
-            
-            out_var = cursor.var(oracledb.NUMBER)
-            cursor.execute(
-                "INSERT INTO usuarios (nome, email) VALUES (:1, :2) RETURNING id INTO :3",
-                [nome, email, out_var]
+def criar_tabela():
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            CREATE TABLE usuarios (
+                id INTEGER GENERATED ALWAYS AS IDENTITY,
+                nome VARCHAR2(100) NOT NULL,
+                email VARCHAR2(100) NOT NULL,
+                PRIMARY KEY(id),
+                CONSTRAINT email_unico UNIQUE (email)
             )
-            conn.commit()
-            return out_var.getvalue()[0]
-            
-        except oracledb.DatabaseError as e:
-            if conn:
-                conn.rollback()
-            error_obj, = e.args
-            if error_obj.code == 1:  
-                raise ValueError("Email já existe") from e
-            print(f"Erro iserindo o usuário: {e}")
-            raise
-        finally:
-            if conn:
-                conn.close()
+        """)
+        conn.commit()
+        print("Tabela criada com sucesso")
+    except oracledb.DatabaseError as e:
+        error_obj = e.args[0]
+        if hasattr(error_obj, 'code') and error_obj.code == 955:
+            print("Tabela já existente...")
+        else:
+            print(f"Erro Oracle: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def inserir_usuario(nome, email):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO usuarios (NOME, EMAIL) VALUES (:nome,:email)', {'nome': nome, 'email': email}) # :nome é um placeholder
+    conn.commit()
+    conn.close()
+
+def listar_usuarios():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM usuarios")
+    usuarios = cursor.fetchall() 
+    conn.close()
+    return usuarios
+
+def excluir_usuario(user_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM usuarios WHERE ID = :id', {'id': user_id})
+    conn.commit()
+    conn.close()
+
+def buscar_usuario_por_id(user_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM usuarios WHERE ID = :id', {'id': user_id})
+    usuario = cursor.fetchone()
+    conn.close()
+    return usuario
+
+def atualizar_usuario(user_id, nome, email):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE usuarios SET NOME = :nome, EMAIL = :email WHERE ID = :id', {'nome': nome, 'email': email, 'id': user_id})
+    conn.commit()
+    conn.close()
